@@ -25,7 +25,7 @@ jobs:
       - uses: actions/checkout@v3
       - run: docker-compose --profile test up -d
       - run: sleep 10
-      - run: sh -c "echo 'WATCH hft.monitoring LIMIT 5' | curl 'http://localhost:8123/?allow_experimental_live_view=1' --data-binary @-"
+      - run: sh -c "echo 'WATCH hft.monitoring LIMIT 5' | curl -s 'http://localhost:8123/?allow_experimental_live_view=1' --data-binary @-"
       - run: echo "WATCH hft.monitoring LIMIT 5 DONE"
       - run: docker-compose --profile test down
 
