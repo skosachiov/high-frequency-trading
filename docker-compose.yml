@@ -178,9 +178,12 @@ services:
       sh -c "
         /entrypoint.sh &
         sleep 10;
-        sed 's/{{KAFKA_HOST}}/kafka_test/g' /git/initdb.sql > /tmp/initdb.sql;
-        clickhouse-client --queries-file /tmp/initdb.sql
+        sleep 10;
+        sed 's/{{KAFKA_HOST}}/kafka_deploy/g' /git/initdb.sql > /tmp/initdb.sql;
+        cat /tmp/initdb.sql;
+        clickhouse-client --queries-file /tmp/initdb.sql;
         clickhouse-client --queries-file /git/monitoring.sql;
+        sleep infinity
       "
     ports:
       - '8123:8123'
