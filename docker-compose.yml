@@ -3,7 +3,7 @@ services:
 # python
 
   python_build:
-    image: docker.io/bitnami/python
+    image: docker.io/bitnami/python:3.11
     container_name: 'python_build'
     user: root
     command: sh -c "cd /git; pip install kafka-python; python -m unittest"
@@ -15,7 +15,7 @@ services:
       - build
 
   python_test:
-    image: docker.io/bitnami/python
+    image: docker.io/bitnami/python:3.11
     container_name: 'python_test'
     command: >
       sh -c "
@@ -37,7 +37,7 @@ services:
       - test
 
   python_deploy:
-    image: docker.io/bitnami/python
+    image: docker.io/bitnami/python:3.11
     container_name: 'python_deploy'
     command: >
       sh -c "
