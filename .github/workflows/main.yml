@@ -2,9 +2,9 @@ name: high-frequency-trading
 
 on:
   push:
-    branches: [_main]
+    branches: [main]
   pull_request:
-    branches: [_main]
+    branches: [main]
 
 jobs:
 
@@ -23,7 +23,7 @@ jobs:
     timeout-minutes: 5
     steps:
       - uses: actions/checkout@v3
-      - run: docker-compose up -d
+      - run: docker-compose --profile test up
 
   deploy:
     runs-on: ubuntu-latest
@@ -31,4 +31,4 @@ jobs:
     timeout-minutes: 5
     steps:
       - uses: actions/checkout@v3
-      - run: docker-compose up -d
+      - run: docker-compose --profile deploy up
