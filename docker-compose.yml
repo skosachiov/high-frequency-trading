@@ -23,7 +23,7 @@ services:
         pip install kafka-python;
         sleep 5; nc -z -v kafka_test 9092 2>&1;
         cd /git;
-        python hft_producer.py 30000 0.002 25 kafka_test:9092
+        python hft_producer.py 60000 0.001 50 kafka_test:9092
       "
     user: root
     depends_on:
@@ -31,6 +31,7 @@ services:
         condition: service_healthy
     environment:
       - KAFKA_HOST=kafka_test:9092
+      - DEBUG
     volumes:
       - ./:/git
     profiles:
