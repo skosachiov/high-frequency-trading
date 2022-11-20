@@ -40,12 +40,10 @@ def hft_datastream(max_iter, interval, n_prices, producer = None, topic = None):
             continue
         time.sleep(sleep_duration)
         d = hft_dataset(n_prices)
-        r = "not connected"
-        if producer != None: r = producer.send(topic, d)
+        producer.send(topic, d)
         if i % int(1/interval) == 0:
             logging.debug(str(i) + ": " + str(time.time()))
             logging.debug(str(d))
-            logging.info('Producer result: ' + str(r))
     return i
 
 
