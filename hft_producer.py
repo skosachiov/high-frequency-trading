@@ -39,7 +39,10 @@ def hft_datastream(max_iter, interval, n_prices, producer = None, topic = None):
         d = hft_dataset(n_prices)
         if producer != None: producer.send(topic, d)
         sleep_duration = start_time + i*interval - time.time_ns()/1e9
-        if sleep_duration < 0:
+        if i % int(1/interval) == 0: # debug
+            logging.debug(str(i) + ": " + str(time.time()))
+            logging.debug(str(d))
+        if sleep_duration < 0: # debug
             nosleep_counter += 1
             if nosleep_counter > 100:
                 logging.critical("Generation process overload")
