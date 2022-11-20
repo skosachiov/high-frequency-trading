@@ -23,7 +23,7 @@ services:
         pip install kafka-python;
         sleep 5; nc -z -v kafka_test 9092 2>&1;
         cd /git;
-        DEBUG="" python -u hft_producer.py 6000 0.01 10 kafka_test:9092
+        python -u hft_producer.py 30000 0.002 25 kafka_test:9092
       "
     user: root
     depends_on:

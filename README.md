@@ -20,7 +20,10 @@ Data path: `Python generator` -> `Kafka` -> `Clickhouse` -> `Web` -> `Triggers`.
 
 ### Web
 
-echo 'WATCH hft.monitoring' | curl 'http://localhost:8123/?allow_experimental_live_view=1' --data-binary @-
+`echo 'WATCH hft.monitoring' | curl 'http://localhost:8123/?allow_experimental_live_view=1' --data-binary @-`
+
+We believe that when receiving 5 events, the testing was successful.
+`echo 'WATCH hft.monitoring LIMIT 5' | curl 'http://localhost:8123/?allow_experimental_live_view=1' --data-binary @-`
 
 ### Triggers
 
@@ -29,5 +32,8 @@ Not yet included in the project.
 ## Useful commands for local development with docker-compose
 
 `git commit -a -m "some fix"; git push`
+
 `git pull; sudo docker-compose --profile test up`
+
+`DEBUG="" python -u hft_producer.py 6000 0.01 10 kafka_test:9092`
 

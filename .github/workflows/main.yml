@@ -2,9 +2,9 @@ name: high-frequency-trading
 
 on:
   push:
-    branches: [main]
+    branches: [_main]
   pull_request:
-    branches: [main]
+    branches: [_main]
 
 jobs:
 
