@@ -11,7 +11,7 @@ jobs:
   build:
     runs-on: ubuntu-latest
     container: { image: docker.io/library/python }
-    timeout-minutes: 1
+    timeout-minutes: 5
     steps:
       - uses: actions/checkout@v3
       - run: pip install kafka-python
@@ -20,19 +20,19 @@ jobs:
   test:
     runs-on: ubuntu-latest
     needs: build
-    timeout-minutes: 5
+    timeout-minutes: 10
     steps:
       - uses: actions/checkout@v3
       - run: docker-compose --profile test up -d
       - run: sleep 10
-      - run: sh -c "echo 'WATCH hft.monitoring LIMIT 5' | curl -s 'http://localhost:8123/?allow_experimental_live_view=1' --data-binary @-"
-      - run: echo "WATCH hft.monitoring LIMIT 5 DONE"
+      - run: sh -c "echo 'WATCH hft.monitoring LIMIT 2' | curl -s 'http://localhost:8123/?allow_experimental_live_view=1' --data-binary @-"
+      - run: echo "WATCH hft.monitoring LIMIT 2 DONE"
       - run: docker-compose --profile test down
 
   deploy:
     runs-on: ubuntu-latest
     needs: test
-    timeout-minutes: 5
+    timeout-minutes: 10
     steps:
       - uses: actions/checkout@v3
-      - run: docker-compose --profile deploy up
+      - run: docker-compose --profile deploy up -d
