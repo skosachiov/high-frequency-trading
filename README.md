@@ -35,5 +35,7 @@ Not yet included in the project.
 
 `git pull; sudo docker-compose --profile test up`
 
+`git pull; sudo docker-compose --profile test up -d`
+
 `DEBUG="" python -u hft_producer.py 6000 0.01 10 kafka_test:9092`
 

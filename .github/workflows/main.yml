@@ -23,10 +23,10 @@ jobs:
     timeout-minutes: 5
     steps:
       - uses: actions/checkout@v3
-      - run: docker-compose --profile test up &
-      - run: sleep 45
+      - run: docker-compose --profile test up -d
+      - run: sleep 10
       - run: sh -c "echo 'WATCH hft.monitoring LIMIT 5' | curl 'http://localhost:8123/?allow_experimental_live_view=1' --data-binary @-"
-      - run: echo "WATCH hft.monitoring LIMIT 5 done"
+      - run: echo "WATCH hft.monitoring LIMIT 5 DONE"
       - run: docker-compose --profile test down
 
   deploy:
