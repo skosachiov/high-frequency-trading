@@ -23,14 +23,14 @@ jobs:
     timeout-minutes: 5
     steps:
       - uses: actions/checkout@v3
-      - run: >
+      - run: |
           docker-compose --profile test up &
-          while ! nc -z localhost 8123; do sleep 1; done;
-          sleep 10;
-          echo 'WATCH hft.monitoring LIMIT 5' |
-            curl 'http://localhost:8123/?allow_experimental_live_view=1'
-            --data-binary @-;
-          docker-compose --profile test down;
+          while ! nc -z localhost 8123; do sleep 1; done
+          sleep 10
+          sh -c "echo 'WATCH hft.monitoring LIMIT 5' | \
+            curl 'http://localhost:8123/?allow_experimental_live_view=1' \
+            --data-binary @-"
+          docker-compose --profile test down
 
   deploy:
     runs-on: ubuntu-latest
