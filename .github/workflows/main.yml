@@ -1,0 +1,34 @@
+name: high-frequency-trading
+
+on:
+  push:
+    branches: [_main]
+  pull_request:
+    branches: [_main]
+
+jobs:
+
+  build:
+    runs-on: ubuntu-latest
+    container: { image: docker.io/library/python }
+    timeout-minutes: 1
+    steps:
+      - uses: actions/checkout@v3
+      - run: pip install kafka-python
+      - run: python -m unittest
+
+  test:
+    runs-on: ubuntu-latest
+    needs: build
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v3
+      - run: docker-compose up -d
+
+  deploy:
+    runs-on: ubuntu-latest
+    needs: test
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v3
+      - run: docker-compose up -d

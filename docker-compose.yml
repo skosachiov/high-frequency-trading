@@ -1,0 +1,195 @@
+services:
+
+# python
+
+  python_build:
+    image: docker.io/bitnami/python
+    container_name: 'python_build'
+    user: root
+    command: sh -c "cd /git; pip install kafka-python; python -m unittest"
+    environment:
+      - DEBUG
+    volumes:
+      - ./:/git
+    profiles:
+      - build
+
+  python_test:
+    image: docker.io/bitnami/python
+    container_name: 'python_test'
+    command: >
+      sh -c "
+        apt update; apt -y install netcat;
+        pip install kafka-python;
+        sleep 5; nc -z -v kafka_test 9092 2>&1;
+        cd /git;
+        DEBUG="" python -u hft_producer.py 60000 0.005 50 kafka_test:9092
+      "
+    user: root
+    depends_on:
+      kafka_test:
+        condition: service_healthy
+    environment:
+      - KAFKA_HOST=kafka_test:9092
+      - DEBUG
+    volumes:
+      - ./:/git
+    profiles:
+      - test
+
+  python_deploy:
+    image: docker.io/bitnami/python
+    container_name: 'python_deploy'
+    command: >
+      sh -c "
+        cd /git;
+        pip install kafka-python;
+        sleep 10;
+        python hft_producer.py 600000 0.001 50 kafka_deploy_9092
+      "
+    user: root
+    depends_on:
+      kafka_deploy:
+        condition: service_healthy
+    environment:
+      - KAFKA_HOST=kafka_deploy:9092
+    volumes:
+      - ./:/git
+    profiles:
+      - deploy
+
+# zookeeper
+
+  zookeeper_test:
+    image: 'docker.io/bitnami/zookeeper'
+    container_name: 'zookeeper_test'
+    user: root
+    ports:
+      - '2181:2181'
+    volumes:
+      - '/opt/zookeeper_data_test:/bitnami/zookeeper'
+    environment:
+      - ALLOW_ANONYMOUS_LOGIN=yes
+    profiles:
+      - test
+
+  zookeeper_deploy:
+    image: 'docker.io/bitnami/zookeeper'
+    container_name: 'zookeeper_deploy'
+    user: root
+    ports:
+      - '2181:2181'
+    volumes:
+      - '/opt/zookeeper_data_deploy:/bitnami/zookeeper'
+    environment:
+      - ALLOW_ANONYMOUS_LOGIN=yes
+    profiles:
+      - deploy
+
+# kafka
+
+  kafka_test:
+    image: 'docker.io/bitnami/kafka'
+    container_name: 'kafka_test'
+    user: root
+    depends_on:
+      - zookeeper_test
+    healthcheck:
+      test: >
+        sh -c "
+          apt update; apt -y install netcat;
+          nc -z localhost 9092 || exit -1
+        "
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    ports:
+      - '9092:9092'
+    volumes:
+      - '/opt/kafka_data_test:/bitnami/kafka'
+    environment:
+      - KAFKA_CFG_LISTENERS=PLAINTEXT://:9092
+      - KAFKA_CFG_ADVERTISED_LISTENERS=PLAINTEXT://kafka_test:9092
+      - KAFKA_CFG_ZOOKEEPER_CONNECT=zookeeper_test:2181
+      - ALLOW_PLAINTEXT_LISTENER=yes
+    profiles:
+      - test
+
+  kafka_deploy:
+    image: 'docker.io/bitnami/kafka'
+    container_name: 'kafka_deploy'
+    user: root
+    depends_on:
+      - zookeeper_deploy
+    healthcheck:
+      test: >
+        sh -c "
+          apt update; apt -y install netcat;
+          nc -z localhost 9092 || exit -1
+        "
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    ports:
+      - '9092:9092'
+    volumes:
+      - '/opt/kafka_data_deploy:/bitnami/kafka'
+    environment:
+      - KAFKA_CFG_LISTENERS=PLAINTEXT://:9092
+      - KAFKA_CFG_ADVERTISED_LISTENERS=PLAINTEXT://kafka_deploy:9092
+      - KAFKA_CFG_ZOOKEEPER_CONNECT=zookeeper_deploy:2181
+      - ALLOW_PLAINTEXT_LISTENER=yes
+    profiles:
+      - deploy
+
+# clickhouse
+
+  clickhouse_test:
+    image: clickhouse/clickhouse-server
+    container_name: 'clickhouse_test'
+    entrypoint:
+      - "/entrypoint.sh"
+    user: root
+    command: >
+      sh -c "
+        /entrypoint.sh &
+        sleep 10;
+        sed 's/{{KAFKA_HOST}}/kafka_test/g' /git/initdb.sql > /tmp/initdb.sql;
+        cat /tmp/initdb.sql;
+        clickhouse-client --queries-file /tmp/initdb.sql;
+        clickhouse-client --queries-file /git/monitoring.sql;
+        sleep infinity
+      "
+    ports:
+      - '8123:8123'
+    volumes:
+      - ./:/git
+      - '/opt/clickhouse_data_test:/var/lib/clickhouse'
+      - '/opt/clickhouse_log_test:/var/log/clickhouse-server'
+    environment:
+      - ALLOW_EMPTY_PASSWORD=yes
+    profiles:
+      - test
+
+  clickhouse_deploy:
+    image: clickhouse/clickhouse-server
+    container_name: 'clickhouse_deploy'
+    user: root
+    command: >
+      sh -c "
+        /entrypoint.sh &
+        sleep 10;
+        sed 's/{{KAFKA_HOST}}/kafka_test/g' /git/initdb.sql > /tmp/initdb.sql;
+        clickhouse-client --queries-file /tmp/initdb.sql
+        clickhouse-client --queries-file /git/monitoring.sql;
+      "
+    ports:
+      - '8123:8123'
+    volumes:
+      - ./:/git
+      - '/opt/clickhouse_data_test:/var/lib/clickhouse'
+      - '/opt/clickhouse_log_test:/var/log/clickhouse-server'
+    environment:
+      - ALLOW_EMPTY_PASSWORD=yes
+    profiles:
+      - deploy
