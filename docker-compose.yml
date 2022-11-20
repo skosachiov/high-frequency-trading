@@ -64,12 +64,6 @@ services:
     image: 'docker.io/bitnami/zookeeper'
     container_name: 'zookeeper_test'
     user: root
-    healthcheck:
-      test: >
-        sh -c "
-          apt update; apt -y install netcat;
-          nc -z localhost 2181 || exit -1
-        "
     ports:
       - '2181:2181'
     volumes:
@@ -83,12 +77,6 @@ services:
     image: 'docker.io/bitnami/zookeeper'
     container_name: 'zookeeper_deploy'
     user: root
-    healthcheck:
-      test: >
-        sh -c "
-          apt update; apt -y install netcat;
-          nc -z localhost 2181 || exit -1
-        "
     ports:
       - '2181:2181'
     volumes:
@@ -105,8 +93,7 @@ services:
     container_name: 'kafka_test'
     user: root
     depends_on:
-      zookeeper_test:
-        condition: service_healthy
+      - zookeeper_test
     healthcheck:
       test: >
         sh -c "
@@ -133,8 +120,7 @@ services:
     container_name: 'kafka_deploy'
     user: root
     depends_on:
-      zookeeper_deploy:
-        condition: service_healthy
+      - zookeeper_deploy
     healthcheck:
       test: >
         sh -c "
