@@ -45,7 +45,7 @@ services:
         pip install kafka-python;
         sleep 5; nc -z -v kafka_deploy 9092 2>&1;
         cd /git;
-        python hft_producer.py 600000 0.002 50 kafka_deploy:9092
+        python hft_producer.py 600000 0.001 50 kafka_deploy:9092
       "
     user: root
     depends_on:
