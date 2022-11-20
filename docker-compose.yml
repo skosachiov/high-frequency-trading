@@ -98,7 +98,6 @@ services:
       test: >
         sh -c "
           apt update; apt -y install netcat;
-          sleep 10;
           nc -z localhost 9092 || exit -1
         "
       interval: 5s
@@ -126,7 +125,6 @@ services:
       test: >
         sh -c "
           apt update; apt -y install netcat;
-          sleep 10;
           nc -z localhost 9092 || exit -1
         "
       interval: 5s
