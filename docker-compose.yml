@@ -31,7 +31,6 @@ services:
         condition: service_healthy
     environment:
       - KAFKA_HOST=kafka_test:9092
-      - DEBUG
     volumes:
       - ./:/git
     profiles:

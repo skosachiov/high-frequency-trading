@@ -23,6 +23,8 @@ jobs:
     timeout-minutes: 5
     steps:
       - uses: actions/checkout@v3
+      - run: apt update
+      - run: apt install netcat curl
       - run: >
           sh -c "
             docker-compose --profile test up &
@@ -31,6 +33,7 @@ jobs:
             echo 'WATCH hft.monitoring LIMIT 5' | \
               curl 'http://localhost:8123/?allow_experimental_live_view=1' \
               --data-binary @-;
+            echo 'DONE: WATCH hft.monitoring LIMIT 5';
             docker-compose --profile test down;
           "
 
