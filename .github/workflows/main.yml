@@ -27,9 +27,7 @@ jobs:
           docker-compose --profile test up &
           while ! nc -z localhost 8123; do sleep 1; done
           sleep 10
-          sh -c "echo 'WATCH hft.monitoring LIMIT 5' | \
-            curl 'http://localhost:8123/?allow_experimental_live_view=1' \
-            --data-binary @-"
+          sh -c "echo 'WATCH hft.monitoring LIMIT 5' | curl 'http://localhost:8123/?allow_experimental_live_view=1' --data-binary @-"
           docker-compose --profile test down
 
   deploy:
