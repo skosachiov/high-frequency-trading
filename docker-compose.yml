@@ -173,11 +173,12 @@ services:
   clickhouse_deploy:
     image: clickhouse/clickhouse-server
     container_name: 'clickhouse_deploy'
+    entrypoint:
+      - "/entrypoint.sh"
     user: root
     command: >
       sh -c "
         /entrypoint.sh &
-        sleep 10;
         sleep 10;
         sed 's/{{KAFKA_HOST}}/kafka_deploy/g' /git/initdb.sql > /tmp/initdb.sql;
         cat /tmp/initdb.sql;
