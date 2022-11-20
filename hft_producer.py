@@ -34,14 +34,19 @@ def hft_dataset(n_prices):
 def hft_datastream(max_iter, interval, n_prices, producer = None, topic = None):
     """High frequency trade datastream generator"""
     start_time = math.ceil(time.time())
+    nosleep_counter = 0
     for i in range(1, max_iter):
         d = hft_dataset(n_prices)
         if producer != None: producer.send(topic, d)
         sleep_duration = start_time + i*interval - time.time_ns()/1e9
         if sleep_duration < 0:
-            logging.critical("Generation process overload")
+            nosleep_counter += 1
+            if nosleep_counter > 100:
+                logging.critical("Generation process overload")
+                nosleep_counter = 0
         else:
             time.sleep(sleep_duration)
+            nosleep_counter = 0
     return i
 
 
