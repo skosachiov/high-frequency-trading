@@ -190,8 +190,8 @@ services:
       - '8123:8123'
     volumes:
       - ./:/git
-      - '/opt/clickhouse_data_test:/var/lib/clickhouse'
-      - '/opt/clickhouse_log_test:/var/log/clickhouse-server'
+      - '/opt/clickhouse_data_deploy:/var/lib/clickhouse'
+      - '/opt/clickhouse_log_deploy:/var/log/clickhouse-server'
     environment:
       - ALLOW_EMPTY_PASSWORD=yes
     profiles:
