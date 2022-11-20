@@ -24,8 +24,6 @@ def hft_dataset(n_prices):
     d['stats_keys'] = ["bid_avg", "ask_avg"]
     d['stats_values'] = [avg['bid']/n_prices, avg['ask']/n_prices]
 
-    logging.debug(str(d))
-    logging.debug(json.dumps(d).encode('utf-8'))
     assert len(d) + len(d['prices_keys']) == 5 + n_prices*2, \
         f"Wrong dict size, waiting {5 + n_prices*2}, got {len(d) + len(d['prices_keys'])}"
     assert 1 <= d['prices_values'][0] and d['prices_values'][0] <= 10, \

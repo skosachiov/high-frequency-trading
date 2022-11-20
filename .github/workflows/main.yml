@@ -2,9 +2,9 @@ name: high-frequency-trading
 
 on:
   push:
-    branches: [_main]
+    branches: [main]
   pull_request:
-    branches: [_main]
+    branches: [main]
 
 jobs:
 
@@ -23,7 +23,13 @@ jobs:
     timeout-minutes: 5
     steps:
       - uses: actions/checkout@v3
-      - run: docker-compose --profile test up
+      - run: |
+          docker-compose --profile test up &
+          sleep 30
+          echo 'WATCH hft.monitoring LIMIT 5' | \
+            curl 'http://localhost:8123/?allow_experimental_live_view=1' \
+            --data-binary @-
+          docker-compose --profile test down
 
   deploy:
     runs-on: ubuntu-latest
