@@ -44,7 +44,8 @@ To develop on a local computer in the style of CI / CD without Github Actions an
 - `git clone git@github.com:skosachiov/high-frequency-trading.git`
 - `cd high-frequency-trading`
 - `sudo docker-compose --profile build up`. Need to get "Ran 2 tests in 0.584s OK"
-- `sudo docker-compose --profile test up. You can start monitoring in another session: user@ubuntu:~$ echo 'WATCH hft.monitoring' | curl 'http://localhost:8123/?allow_experimental_live_view=1' --data-binary @-`
+- `sudo docker-compose --profile test up`. You can start monitoring in another session: <br/>
+`user@ubuntu:~$ echo 'WATCH hft.monitoring' | curl 'http://localhost:8123/?allow_experimental_live_view=1' --data-binary @-`
 - If everything is OK, deploy: `sudo docker-compose --profile deploy up -d`
 
 ## Useful commands for local development with docker-compose
